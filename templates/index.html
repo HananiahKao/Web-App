@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Scraper</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i data-feather="grid"></i> WebScrapeX
+            </a>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow">
+                    <div class="card-header bg-dark">
+                        <h3 class="mb-0">Web Scraping Tool</h3>
+                    </div>
+                    <div class="card-body">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                        
+                        {% if error %}
+                            <div class="alert alert-danger">
+                                {{ error }}
+                            </div>
+                        {% endif %}
+                        
+                        <form action="{{ url_for('scrape') }}" method="post">
+                            <div class="mb-3">
+                                <label for="url" class="form-label">Website URL</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" id="url-addon">
+                                        <i data-feather="link"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="url" name="url" 
+                                           placeholder="Enter URL (e.g., https://example.com)" required>
+                                </div>
+                                <div class="form-text">Enter the complete URL including http:// or https://</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Elements to Extract</label>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="elements" id="links" value="links" checked>
+                                            <label class="form-check-label" for="links">
+                                                <i data-feather="link" class="me-1"></i> Links
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="elements" id="headings" value="headings">
+                                            <label class="form-check-label" for="headings">
+                                                <i data-feather="type" class="me-1"></i> Headings
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="elements" id="paragraphs" value="paragraphs">
+                                            <label class="form-check-label" for="paragraphs">
+                                                <i data-feather="align-left" class="me-1"></i> Paragraphs
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="elements" id="images" value="images">
+                                            <label class="form-check-label" for="images">
+                                                <i data-feather="image" class="me-1"></i> Images
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="elements" id="tables" value="tables">
+                                            <label class="form-check-label" for="tables">
+                                                <i data-feather="grid" class="me-1"></i> Tables
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="elements" id="forms" value="forms">
+                                            <label class="form-check-label" for="forms">
+                                                <i data-feather="file-text" class="me-1"></i> Forms
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="elements" id="meta" value="meta">
+                                            <label class="form-check-label" for="meta">
+                                                <i data-feather="info" class="me-1"></i> Meta Tags
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="elements" id="scripts" value="scripts">
+                                            <label class="form-check-label" for="scripts">
+                                                <i data-feather="code" class="me-1"></i> Script URLs
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" name="elements" id="full_html" value="full_html">
+                                            <label class="form-check-label" for="full_html">
+                                                <i data-feather="file" class="me-1"></i> Full HTML
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i data-feather="search"></i> Start Scraping
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card shadow mt-4">
+                    <div class="card-header bg-dark">
+                        <h3 class="mb-0">About Web Scraping</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <h5><i data-feather="info"></i> What is Web Scraping?</h5>
+                            <p>Web scraping is the process of automatically extracting data from websites. This tool uses Python's requests library to fetch web pages and Beautiful Soup to parse HTML and extract specific elements.</p>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <h5><i data-feather="alert-triangle"></i> Important Notes</h5>
+                            <ul>
+                                <li>Always respect websites' terms of service and robots.txt files.</li>
+                                <li>Be considerate with request frequency to avoid overloading servers.</li>
+                                <li>Some websites actively block scraping attempts.</li>
+                                <li>For commercial use of scraped data, consult legal advice.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="mt-5 py-3 bg-dark text-center text-white">
+        <div class="container">
+            <p class="mb-0">
+                WebScrapeX - A Python-based web scraping tool using Requests and Beautiful Soup
+            </p>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+/* Additional custom styles */
+
+/* Code blocks and pre formatting */
+pre {
+  background-color: var(--bs-dark);
+  color: var(--bs-light);
+  padding: 1rem;
+  border-radius: 0.25rem;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+code {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+/* Cards and containers */
+.card {
+  margin-bottom: 1.5rem;
+  border: none;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+  font-weight: 500;
+}
+
+/* Custom styles for tables */
+.table-responsive {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Custom Badge for element counts */
+.element-badge {
+  font-size: 0.8em;
+  padding: 0.25em 0.6em;
+  border-radius: 50%;
+}
+
+/* Toast notifications */
+.toast-container {
+  z-index: 1100;
+}
+
+/* Ensure Feather icons align correctly with text */
+.feather {
+  width: 18px;
+  height: 18px;
+  vertical-align: text-bottom;
+  margin-right: 0.15rem;
+}
+
+/* Button with icon alignment */
+.btn .feather {
+  margin-right: 0.25rem;
+}
+
+/* Accordion styles */
+.accordion-button:not(.collapsed) {
+  background-color: var(--bs-primary-bg-subtle);
+  color: var(--bs-primary);
+}
+
+/* Make links more visible in dark mode */
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Add a subtle hover effect to table rows */
+.table-hover tbody tr:hover {
+  background-color: var(--bs-secondary-bg-subtle);
+}
+
+/* Make form controls more visible in dark theme */
+.form-control, .form-select {
+  background-color: var(--bs-dark);
+  color: var(--bs-light);
+  border-color: var(--bs-secondary);
+}
+
+.form-control:focus, .form-select:focus {
+  background-color: var(--bs-dark);
+  color: var(--bs-light);
+}
+
+/* Custom scrollbar for better visibility */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bs-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bs-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--bs-primary);
+}

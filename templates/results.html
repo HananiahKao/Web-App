@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scraping Results - WebScrapeX</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i data-feather="grid"></i> WebScrapeX
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">
+                            <i data-feather="home"></i> New Scrape
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-dark d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">Scraping Results</h3>
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-sm">
+                            <i data-feather="arrow-left"></i> Back
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info d-flex align-items-center">
+                            <i data-feather="info" class="me-2"></i>
+                            <div>
+                                Showing results for: <strong>{{ url }}</strong>
+                            </div>
+                        </div>
+                        
+                        <!-- Navigation tabs for different element types -->
+                        <ul class="nav nav-tabs" id="resultsTabs" role="tablist">
+                            {% if 'links' in elements and results.links %}
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="links-tab" data-bs-toggle="tab" data-bs-target="#links-content" type="button" role="tab" aria-controls="links-content" aria-selected="true">
+                                        <i data-feather="link"></i> Links ({{ results.links|length }})
+                                    </button>
+                                </li>
+                            {% endif %}
+                            
+                            {% if 'headings' in elements and results.headings %}
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link {% if 'links' not in elements or not results.links %}active{% endif %}" id="headings-tab" data-bs-toggle="tab" data-bs-target="#headings-content" type="button" role="tab" aria-controls="headings-content" aria-selected="false">
+                                        <i data-feather="type"></i> Headings ({{ results.headings|length }})
+                                    </button>
+                                </li>
+                            {% endif %}
+                            
+                            {% if 'paragraphs' in elements and results.paragraphs %}
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link {% if 'links' not in elements and 'headings' not in elements %}active{% endif %}" id="paragraphs-tab" data-bs-toggle="tab" data-bs-target="#paragraphs-content" type="button" role="tab" aria-controls="paragraphs-content" aria-selected="false">
+                                        <i data-feather="align-left"></i> Paragraphs ({{ results.paragraphs|length }})
+                                    </button>
+                                </li>
+                            {% endif %}
+                            
+                            {% if 'images' in elements and results.images %}
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="images-tab" data-bs-toggle="tab" data-bs-target="#images-content" type="button" role="tab" aria-controls="images-content" aria-selected="false">
+                                        <i data-feather="image"></i> Images ({{ results.images|length }})
+                                    </button>
+                                </li>
+                            {% endif %}
+                            
+                            {% if 'tables' in elements and results.tables %}
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="tables-tab" data-bs-toggle="tab" data-bs-target="#tables-content" type="button" role="tab" aria-controls="tables-content" aria-selected="false">
+                                        <i data-feather="grid"></i> Tables ({{ results.tables|length }})
+                                    </button>
+                                </li>
+                            {% endif %}
+                            
+                            {% if 'forms' in elements and results.forms %}
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="forms-tab" data-bs-toggle="tab" data-bs-target="#forms-content" type="button" role="tab" aria-controls="forms-content" aria-selected="false">
+                                        <i data-feather="file-text"></i> Forms ({{ results.forms|length }})
+                                    </button>
+                                </li>
+                            {% endif %}
+                            
+                            {% if 'meta' in elements and results.meta %}
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="meta-tab" data-bs-toggle="tab" data-bs-target="#meta-content" type="button" role="tab" aria-controls="meta-content" aria-selected="false">
+                                        <i data-feather="info"></i> Meta Tags ({{ results.meta|length }})
+                                    </button>
+                                </li>
+                            {% endif %}
+                            
+                            {% if 'scripts' in elements and results.scripts %}
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="scripts-tab" data-bs-toggle="tab" data-bs-target="#scripts-content" type="button" role="tab" aria-controls="scripts-content" aria-selected="false">
+                                        <i data-feather="code"></i> Scripts ({{ results.scripts|length }})
+                                    </button>
+                                </li>
+                            {% endif %}
+                            
+                            {% if 'full_html' in elements and results.full_html %}
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="full-html-tab" data-bs-toggle="tab" data-bs-target="#full-html-content" type="button" role="tab" aria-controls="full-html-content" aria-selected="false">
+                                        <i data-feather="file"></i> Full HTML
+                                    </button>
+                                </li>
+                            {% endif %}
+                        </ul>
+                        
+                        <!-- Tab content -->
+                        <div class="tab-content mt-3" id="resultsTabContent">
+                            {% if 'links' in elements and results.links %}
+                                <div class="tab-pane fade show active" id="links-content" role="tabpanel" aria-labelledby="links-tab">
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <h4>Links ({{ results.links|length }})</h4>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('links-table')">
+                                            <i data-feather="copy"></i> Copy to Clipboard
+                                        </button>
+                                    </div>
+                                    {% if results.links %}
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover" id="links-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">#</th>
+                                                        <th scope="col">Link Text</th>
+                                                        <th scope="col">URL</th>
+                                                        <th scope="col">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for link in results.links %}
+                                                        <tr>
+                                                            <th scope="row">{{ loop.index }}</th>
+                                                            <td>{{ link.text }}</td>
+                                                            <td><code>{{ link.url }}</code></td>
+                                                            <td>
+                                                                <a href="{{ link.url }}" target="_blank" class="btn btn-sm btn-outline-info" title="Open link in new tab">
+                                                                    <i data-feather="external-link"></i>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-warning">No links found on this page.</div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                            
+                            {% if 'headings' in elements and results.headings %}
+                                <div class="tab-pane fade {% if 'links' not in elements or not results.links %}show active{% endif %}" id="headings-content" role="tabpanel" aria-labelledby="headings-tab">
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <h4>Headings ({{ results.headings|length }})</h4>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('headings-content')">
+                                            <i data-feather="copy"></i> Copy to Clipboard
+                                        </button>
+                                    </div>
+                                    {% if results.headings %}
+                                        <div class="list-group">
+                                            {% for heading in results.headings %}
+                                                <div class="list-group-item list-group-item-action">
+                                                    <div class="d-flex w-100 justify-content-between">
+                                                        <h{{ heading.level }} class="mb-1">{{ heading.text }}</h{{ heading.level }}>
+                                                        <small>H{{ heading.level }}</small>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-warning">No headings found on this page.</div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                            
+                            {% if 'paragraphs' in elements and results.paragraphs %}
+                                <div class="tab-pane fade {% if 'links' not in elements and 'headings' not in elements %}show active{% endif %}" id="paragraphs-content" role="tabpanel" aria-labelledby="paragraphs-tab">
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <h4>Paragraphs ({{ results.paragraphs|length }})</h4>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('paragraphs-content')">
+                                            <i data-feather="copy"></i> Copy to Clipboard
+                                        </button>
+                                    </div>
+                                    {% if results.paragraphs %}
+                                        <div class="accordion" id="paragraphsAccordion">
+                                            {% for paragraph in results.paragraphs %}
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header" id="paragraph-heading-{{ loop.index }}">
+                                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#paragraph-collapse-{{ loop.index }}" aria-expanded="false" aria-controls="paragraph-collapse-{{ loop.index }}">
+                                                            Paragraph #{{ loop.index }} - {{ paragraph[:50] }}{% if paragraph|length > 50 %}...{% endif %}
+                                                        </button>
+                                                    </h2>
+                                                    <div id="paragraph-collapse-{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="paragraph-heading-{{ loop.index }}" data-bs-parent="#paragraphsAccordion">
+                                                        <div class="accordion-body">
+                                                            {{ paragraph }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-warning">No paragraphs found on this page.</div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                            
+                            {% if 'images' in elements and results.images %}
+                                <div class="tab-pane fade" id="images-content" role="tabpanel" aria-labelledby="images-tab">
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <h4>Images ({{ results.images|length }})</h4>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('images-table')">
+                                            <i data-feather="copy"></i> Copy URLs
+                                        </button>
+                                    </div>
+                                    {% if results.images %}
+                                        <div class="table-responsive">
+                                            <table class="table table-striped" id="images-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">#</th>
+                                                        <th scope="col">Alt Text</th>
+                                                        <th scope="col">Source URL</th>
+                                                        <th scope="col">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for image in results.images %}
+                                                        <tr>
+                                                            <th scope="row">{{ loop.index }}</th>
+                                                            <td>{{ image.alt }}</td>
+                                                            <td><code>{{ image.src }}</code></td>
+                                                            <td>
+                                                                <a href="{{ image.src }}" target="_blank" class="btn btn-sm btn-outline-info" title="Open image in new tab">
+                                                                    <i data-feather="external-link"></i>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-warning">No images found on this page.</div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                            
+                            {% if 'tables' in elements and results.tables %}
+                                <div class="tab-pane fade" id="tables-content" role="tabpanel" aria-labelledby="tables-tab">
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <h4>Tables ({{ results.tables|length }})</h4>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('tables-content')">
+                                            <i data-feather="copy"></i> Copy to Clipboard
+                                        </button>
+                                    </div>
+                                    {% if results.tables %}
+                                        <div class="accordion" id="tablesAccordion">
+                                            {% for table in results.tables %}
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header" id="table-heading-{{ loop.index }}">
+                                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#table-collapse-{{ loop.index }}" aria-expanded="false" aria-controls="table-collapse-{{ loop.index }}">
+                                                            Table #{{ loop.index }} ({{ table|length }} rows)
+                                                        </button>
+                                                    </h2>
+                                                    <div id="table-collapse-{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="table-heading-{{ loop.index }}" data-bs-parent="#tablesAccordion">
+                                                        <div class="accordion-body">
+                                                            <div class="table-responsive">
+                                                                <table class="table table-striped table-bordered">
+                                                                    <tbody>
+                                                                        {% for row in table %}
+                                                                            <tr>
+                                                                                {% for cell in row %}
+                                                                                    <td>{{ cell }}</td>
+                                                                                {% endfor %}
+                                                                            </tr>
+                                                                        {% endfor %}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-warning">No tables found on this page.</div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                            
+                            {% if 'forms' in elements and results.forms %}
+                                <div class="tab-pane fade" id="forms-content" role="tabpanel" aria-labelledby="forms-tab">
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <h4>Forms ({{ results.forms|length }})</h4>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('forms-content')">
+                                            <i data-feather="copy"></i> Copy to Clipboard
+                                        </button>
+                                    </div>
+                                    {% if results.forms %}
+                                        <div class="accordion" id="formsAccordion">
+                                            {% for form in results.forms %}
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header" id="form-heading-{{ loop.index }}">
+                                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#form-collapse-{{ loop.index }}" aria-expanded="false" aria-controls="form-collapse-{{ loop.index }}">
+                                                            Form #{{ loop.index }} - {{ form.action or 'Current Page' }} ({{ form.method|upper }})
+                                                        </button>
+                                                    </h2>
+                                                    <div id="form-collapse-{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="form-heading-{{ loop.index }}" data-bs-parent="#formsAccordion">
+                                                        <div class="accordion-body">
+                                                            <div class="card">
+                                                                <div class="card-header">
+                                                                    <strong>Action:</strong> {{ form.action or 'Current Page' }}<br>
+                                                                    <strong>Method:</strong> {{ form.method|upper }}
+                                                                </div>
+                                                                <div class="card-body">
+                                                                    {% if form.inputs %}
+                                                                        <h5>Form Inputs:</h5>
+                                                                        <div class="table-responsive">
+                                                                            <table class="table table-sm">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th>Type</th>
+                                                                                        <th>Name</th>
+                                                                                        <th>ID</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    {% for input in form.inputs %}
+                                                                                        <tr>
+                                                                                            <td>{{ input.type }}</td>
+                                                                                            <td>{{ input.name }}</td>
+                                                                                            <td>{{ input.id }}</td>
+                                                                                        </tr>
+                                                                                    {% endfor %}
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    {% else %}
+                                                                        <p class="text-muted">No inputs found in this form.</p>
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-warning">No forms found on this page.</div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                            
+                            {% if 'meta' in elements and results.meta %}
+                                <div class="tab-pane fade" id="meta-content" role="tabpanel" aria-labelledby="meta-tab">
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <h4>Meta Tags ({{ results.meta|length }})</h4>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('meta-table')">
+                                            <i data-feather="copy"></i> Copy to Clipboard
+                                        </button>
+                                    </div>
+                                    {% if results.meta %}
+                                        <div class="table-responsive">
+                                            <table class="table table-striped" id="meta-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">#</th>
+                                                        <th scope="col">Attributes</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for meta in results.meta %}
+                                                        <tr>
+                                                            <th scope="row">{{ loop.index }}</th>
+                                                            <td>
+                                                                <code>
+                                                                    {% for key, value in meta.items() %}
+                                                                        {{ key }}="{{ value }}" 
+                                                                    {% endfor %}
+                                                                </code>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-warning">No meta tags found on this page.</div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                            
+                            {% if 'scripts' in elements and results.scripts %}
+                                <div class="tab-pane fade" id="scripts-content" role="tabpanel" aria-labelledby="scripts-tab">
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <h4>Script URLs ({{ results.scripts|length }})</h4>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('scripts-list')">
+                                            <i data-feather="copy"></i> Copy to Clipboard
+                                        </button>
+                                    </div>
+                                    {% if results.scripts %}
+                                        <ul class="list-group" id="scripts-list">
+                                            {% for script in results.scripts %}
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <code>{{ script }}</code>
+                                                    <a href="{{ script }}" target="_blank" class="btn btn-sm btn-outline-info" title="Open in new tab">
+                                                        <i data-feather="external-link"></i>
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <div class="alert alert-warning">No script URLs found on this page.</div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                            
+                            {% if 'full_html' in elements and results.full_html %}
+                                <div class="tab-pane fade" id="full-html-content" role="tabpanel" aria-labelledby="full-html-tab">
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <h4>Full HTML</h4>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('html-code')">
+                                            <i data-feather="copy"></i> Copy to Clipboard
+                                        </button>
+                                    </div>
+                                    <div class="form-group">
+                                        <pre class="bg-dark text-light p-3 rounded" style="max-height: 500px; overflow-y: auto;"><code id="html-code">{{ results.full_html }}</code></pre>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            
+                            {% if not results %}
+                                <div class="alert alert-warning">
+                                    <i data-feather="alert-triangle"></i> No data was extracted from the website. Try selecting different elements or try another URL.
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="mt-5 py-3 bg-dark text-center text-white">
+        <div class="container">
+            <p class="mb-0">
+                WebScrapeX - A Python-based web scraping tool using Requests and Beautiful Soup
+            </p>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
